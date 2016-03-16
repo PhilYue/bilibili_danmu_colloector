@@ -23,7 +23,6 @@ class CommentsRecorder(threading.Thread):
                 print (len(comments))
                 self.commentq.clear()
                 self.lock.release()
-                print (comments[0])
                 for comment in comments:
                     table = 'tt' + str(comment[0])
 
