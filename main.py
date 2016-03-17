@@ -6,9 +6,10 @@ from taskscreator import taskcreator
 
 lock = threading.Lock()
 commentq = []
+numq = []
 
-recorder = CommentsRecorder(lock, commentq)
-upers = taskcreator(lock, commentq)
+recorder = CommentsRecorder(lock, commentq, numq)
+upers = taskcreator(lock, commentq, numq)
 
 recorder.start()
 asyncio.ensure_future(upers.creating())

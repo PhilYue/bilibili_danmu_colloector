@@ -9,7 +9,7 @@ import re
 import time
 
 class bilibiliClient():
-    def __init__(self, roomid, lock, commentq):
+    def __init__(self, roomid, lock, commentq,  numq):
         self._CIDInfoUrl = 'http://live.bilibili.com/api/player?id=cid:'
         self._roomId = 0
         self._ChatPort = 788
@@ -23,6 +23,8 @@ class bilibiliClient():
         self._roomId = roomid
         self.lock = lock
         self.commentq = commentq
+        self.numq = numq
+
 
     async def connectServer(self):
         #print ('正在进入房间。。。。。')
@@ -97,6 +99,11 @@ class bilibiliClient():
                     tmp = await self._reader.read(4)
                     num3, = unpack('!I', tmp)
                     self._UserCount = num3
+
+                    item = [self._roomId, num3, int(time.time())]
+                    if self.lock.acquire():
+                        self.numq.append(item)
+                        self.lock.release()
                     continue
                 elif num==3 or num==4:
                     tmp = await self._reader.read(num2)
@@ -135,6 +142,7 @@ class bilibiliClient():
             isVIP = dic['info'][2][3] == '1'
 
             item = [self._roomId, commentUser, commentText, int(time.time())]
+            #print (item)
             if self.lock.acquire():
                 self.commentq.append(item)
                 self.lock.release()

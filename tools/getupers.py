@@ -16,6 +16,7 @@ def main():
         url = int(tr.a['href'][1:])
         uper = tr.a.span.get_text()
         cu.execute('create table tt%s (id integer primary key AUTOINCREMENT, name nvarchar(15), comment text, time integer)' % url)
+        cu.execute('create table ss%s (id integer primary key AUTOINCREMENT, number integer, time integer)' % url)
         cu.execute("insert into rooms (url, name) values (%s, '%s')" % (url, uper))
     cx.commit()
 
