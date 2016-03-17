@@ -53,15 +53,21 @@ class bilibiliClient():
             self.connected = True
             print ('进入房间成功。。。。。%s' % self._roomId)
             #print ('链接弹幕成功。。。。。')
-            await self.ReceiveMessageLoop()
+            try:
+                await self.ReceiveMessageLoop()
+            except: # 发生异常直接退出该 task
+                return
 
     async def HeartbeatLoop(self):
         while self.connected == False:
             await asyncio.sleep(0.5)
 
-        while self.connected == True:
-            await self.SendSocketData(0, 16, self._protocolversion, 2, 1, "")
-            await asyncio.sleep(30)
+        try:
+            while self.connected == True:
+                await self.SendSocketData(0, 16, self._protocolversion, 2, 1, "")
+                await asyncio.sleep(30)
+        except: # 发生异常直接退出该 task
+            return
 
 
     async def SendJoinChannel(self, channelId):

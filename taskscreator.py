@@ -7,6 +7,7 @@ class taskcreator():
         self.lock = lock
         self.commentq = commentq
         self.numq = numq
+        self.tasks = {}
 
         cx = sqlite3.connect('bilbili.db', check_same_thread = False)
         #cu = cx.cursor()
@@ -19,11 +20,26 @@ class taskcreator():
     async def creating(self):
         for url in self.urls:
             danmuji = bilibiliClient(url, self.lock, self.commentq, self.numq)
-            asyncio.ensure_future(danmuji.connectServer())
-            asyncio.ensure_future(danmuji.HeartbeatLoop())
+            task1 = asyncio.ensure_future(danmuji.connectServer())
+            task2 = asyncio.ensure_future(danmuji.HeartbeatLoop())
+            self.tasks[url] = [task1, task2]
             await asyncio.sleep(0.2)
 
         while True:
             await asyncio.sleep(10)
-            tasks = asyncio.Task.all_tasks()
-            print ('now there is %s' % len(tasks))
+            for url in self.tasks:
+                item = self.tasks[url]
+                task1 = item[0]
+                task2 = item[1]
+                if task1.done() == True or task2.done() == True:
+                    if task1.done() == False:
+                        task1.cancel()
+                    if task2.done() == False:
+                        task2.cancel()
+                    print ('重新进入直播间 %s' % url)
+                    danmuji = bilibiliClient(url, self.lock, self.commentq, self.numq)
+                    task11 = asyncio.ensure_future(danmuji.connectServer())
+                    task22 = asyncio.ensure_future(danmuji.HeartbeatLoop())
+                    self.tasks[url] = [task11, task22]
+            print ('len: %s' % len(self.tasks))
+            print ('now there is %s' % len(asyncio.Task.all_tasks()))

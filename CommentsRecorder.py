@@ -23,18 +23,16 @@ class CommentsRecorder(threading.Thread):
 
             if self.lock.acquire():
                 nums = copy.deepcopy(self.numq)
-                print (len(nums))
                 self.numq.clear()
                 self.lock.release()
                 for num in nums:
                     table = 'ss' + str(num[0])
                     self.cu.execute("insert into %s (number, time) values (?, ? )" % table, (num[1], num[2]))
                 self.cx.commit()
-                print ('record number of people')
+                print ('record number of people: %s' % len(nums))
 
             if self.lock.acquire():
                 comments = copy.deepcopy(self.commentq)
-                print (len(comments))
                 self.commentq.clear()
                 self.lock.release()
                 for comment in comments:
@@ -42,5 +40,5 @@ class CommentsRecorder(threading.Thread):
 
                     self.cu.execute("insert into %s (name, comment, time) values (?, ?, ?)" % table, (comment[1], comment[2], comment[3]))
                 self.cx.commit()
-                print ('record comments')
+                print ('record comments: %s' % len(comments))
             print ()
