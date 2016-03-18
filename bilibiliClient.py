@@ -8,6 +8,9 @@ import json
 import re
 import time
 
+import logging
+logger = logging.getLogger('bili')
+
 class bilibiliClient():
     def __init__(self, roomid, lock, commentq,  numq):
         self._CIDInfoUrl = 'http://live.bilibili.com/api/player?id=cid:'
@@ -52,6 +55,7 @@ class bilibiliClient():
         if (await self.SendJoinChannel(self._roomId) == True):
             self.connected = True
             print ('进入房间成功。。。。。%s' % self._roomId)
+            logging.debug('进入房间成功。。。。。%s' % self._roomId)
             #print ('链接弹幕成功。。。。。')
             try:
                 await self.ReceiveMessageLoop()

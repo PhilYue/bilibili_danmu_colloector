@@ -4,6 +4,11 @@ import threading
 from CommentsRecorder import CommentsRecorder
 from taskscreator import taskcreator
 
+import logging
+import logging.config
+
+logging.config.fileConfig("logger.conf")
+
 lock = threading.Lock()
 commentq = []
 numq = []
